@@ -1,0 +1,12 @@
+CREATE VIEW utilisation_equipements AS
+SELECT 
+    CONCAT(p.nom, ' ', p.prenom) AS nom_complet,
+    p.role AS role_projet,
+    p.guichet_financement,
+    e.taux_exploitation,
+    e.frequence,
+    e.nom AS nom_equipement,
+    e.type AS type_equipement
+FROM personnes p
+JOIN equipements e ON p.id_personne = e.id_personne
+WHERE p.type_personne = 'interne';

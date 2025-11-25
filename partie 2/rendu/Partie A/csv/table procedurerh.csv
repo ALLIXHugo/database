@@ -1,0 +1,17 @@
+﻿NumProcedureRH;NomProcedure;DescriptionProcedure
+1;Acceptation entretien;Validation de l’entretien et acceptation du candidat.
+2;Rédaction contrat;Rédaction du document contractuel.
+3;Validation hierarchique;Validation du document contractuel par la hiérarchie.
+4;Signature contrat;Mise du document dans le circuit de signatures.
+5;Soutenance à huis clos;Présentation confidentielle des travaux.
+6;Soutenance public;Présentation des travaux devant un jury.
+7;Rédaction promesse d'embauche;Rédaction d'une promesse d'embauche.
+8;Relecture document;Relecture et correction du document.
+9;Inscription doctorat;Enregistrement de l'étudiant à un cursus de doctorat.
+10;Soutenance à mi-parcours;Présentation des travaux lors d'un séminaire interne.
+11;Recherche de membres du jury;Identification d'experts.
+12;Vérification DGSI;Vérification des antécédents et évaluation des risques de recrutement d'un candidat.
+13;Prise de Fonction;Intégration du personnel dans l'équipe.
+14;Demande de pièces justificatives;Collecte et trie des documents administratifs.
+15;Suivi annuel;Evaluation périodique du personnel.
+16;Demande d'émerite;Soumission du dossier de reconnaissance honorifique pour une carrière exceptionnelle.

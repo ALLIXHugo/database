@@ -1,0 +1,304 @@
+drop table if exists AFFECTATION cascade;
+
+drop table if exists AUTEUR_DE cascade;
+
+drop table if exists CONTRAT cascade;
+
+drop table if exists EQUIPEMENT cascade;
+
+drop table if exists EST_LIE cascade;
+
+drop table if exists ETAPE cascade;
+
+drop table if exists PERSONNE cascade;
+
+drop table if exists PROCEDURE cascade;
+
+drop table if exists PROJET cascade;
+
+drop table if exists PUBLICATION cascade;
+
+drop table if exists ROLE_PERSONNE cascade;
+
+drop table if exists SALLE cascade;
+
+drop table if exists STATUT cascade;
+
+drop table if exists TYPE_CONTRAT cascade;
+
+drop table if exists TYPE_PUBLICATION cascade;
+
+drop table if exists UTILISE cascade;
+
+/*==============================================================*/
+/* Table : AFFECTATION                                          */
+/*==============================================================*/
+create table AFFECTATION (
+   ID_SALLE             VARCHAR(4)           not null,
+   ID_HAL               VARCHAR(13)          not null,
+   DATE_AFFECTATION     DATE                 null,
+   DATE_FIN             DATE                 null,
+   constraint PK_AFFECTATION primary key (ID_SALLE, ID_HAL)
+);
+
+/*==============================================================*/
+/* Table : AUTEUR_DE                                            */
+/*==============================================================*/
+create table AUTEUR_DE (
+   ID_HAL               VARCHAR(13)          not null,
+   IDPUBLICATION        NUMERIC(8)           not null,
+   CONTRIBUTIONPERSONNE NUMERIC(100)         null,
+   constraint PK_AUTEUR_DE primary key (ID_HAL, IDPUBLICATION)
+);
+
+/*==============================================================*/
+/* Table : CONTRAT                                              */
+/*==============================================================*/
+create table CONTRAT (
+   NUM_CONTRAT          INT4                 not null,
+   ID_HAL               VARCHAR(13)          not null,
+   ID_STATUT            INT4                 not null,
+   ID_TYPECONTRAT       INT4                 not null,
+   DATEDEBUT            DATE                 null,
+   DATEFIN              DATE                 null,
+   DUREE_EST_DETERMINE  BOOL                 null,
+   TYPE_CONTRAT         VARCHAR(50)          null,
+   constraint PK_CONTRAT primary key (NUM_CONTRAT)
+);
+
+/*==============================================================*/
+/* Table : EQUIPEMENT                                           */
+/*==============================================================*/
+create table EQUIPEMENT (
+   CODE_USMB            CHAR(10)             not null,
+   ID_SALLE             VARCHAR(4)           not null,
+   NOM_EQUIPEMENT       CHAR(10)             null,
+   TYPE                 VARCHAR(1024)        null,
+   constraint PK_EQUIPEMENT primary key (CODE_USMB)
+);
+
+/*==============================================================*/
+/* Table : EST_LIE                                              */
+/*==============================================================*/
+create table EST_LIE (
+   ID_STATUT            INT4                 not null,
+   ID_PROCEDURE         INT4                 not null,
+   constraint PK_EST_LIE primary key (ID_STATUT, ID_PROCEDURE)
+);
+
+/*==============================================================*/
+/* Table : ETAPE                                                */
+/*==============================================================*/
+create table ETAPE (
+   ID_ETAPE             INT4                 not null,
+   ID_PROCEDURE         INT4                 not null,
+   NUM_CONTRAT          INT4                 not null,
+   DATE_MAJ             DATE                 null,
+   STATUE_ETAPE         VARCHAR(15)          null,
+   constraint PK_ETAPE primary key (ID_ETAPE)
+);
+
+/*==============================================================*/
+/* Table : PERSONNE                                             */
+/*==============================================================*/
+create table PERSONNE (
+   ID_HAL               VARCHAR(13)          not null,
+   NOM                  VARCHAR(50)          null,
+   PRENOM               VARCHAR(50)          null,
+   CODE_INSEE           INT4                 null,
+   COURRIEL_PERSO       VARCHAR(100)         null,
+   COURRIEL_PRO         VARCHAR(100)         null,
+   EST_INTERNE          BOOL                 null,
+   constraint PK_PERSONNE primary key (ID_HAL)
+);
+
+/*==============================================================*/
+/* Table : PROCEDURE                                            */
+/*==============================================================*/
+create table PROCEDURE (
+   ID_PROCEDURE         INT4                 not null,
+   ATTRIBUT_17          VARCHAR(100)         null,
+   DESCRIPTTION         VARCHAR(200)         null,
+   ORDRE                NUMERIC              null,
+   constraint PK_PROCEDURE primary key (ID_PROCEDURE)
+);
+
+/*==============================================================*/
+/* Table : PROJET                                               */
+/*==============================================================*/
+create table PROJET (
+   IDPROJET             NUMERIC(8)           not null,
+   NOMPROJET            VARCHAR(50)          null,
+   DATEDEPOTGICHET      DATE                 null,
+   NOMGICHET            VARCHAR(50)          null,
+   DATEDEBUTPROJET      DATE                 null,
+   DURREE               INT4                 null,
+   BUDGET               CHAR(10)             null,
+   constraint PK_PROJET primary key (IDPROJET)
+);
+
+/*==============================================================*/
+/* Table : PUBLICATION                                          */
+/*==============================================================*/
+create table PUBLICATION (
+   IDPUBLICATION        NUMERIC(8)           not null,
+   IDPROJET             NUMERIC(8)           null,
+   ID_TYPEPUBLI         INT4                 not null,
+   NOMJOURNALOUCONF     VARCHAR(50)          null,
+   constraint PK_PUBLICATION primary key (IDPUBLICATION)
+);
+
+/*==============================================================*/
+/* Table : ROLE_PERSONNE                                        */
+/*==============================================================*/
+create table ROLE_PERSONNE (
+   IDPROJET             NUMERIC(8)           not null,
+   ID_HAL               VARCHAR(13)          not null,
+   ROLE                 VARCHAR(50)          null,
+   constraint PK_ROLE_PERSONNE primary key (IDPROJET, ID_HAL)
+);
+
+/*==============================================================*/
+/* Table : SALLE                                                */
+/*==============================================================*/
+create table SALLE (
+   ID_SALLE             VARCHAR(4)           not null,
+   NUM_ETAGE            INT4                 null,
+   TYPE_SALLE           VARCHAR(1024)        null,
+   CAPACITE             INT4                 null,
+   constraint PK_SALLE primary key (ID_SALLE)
+);
+
+/*==============================================================*/
+/* Table : STATUT                                               */
+/*==============================================================*/
+create table STATUT (
+   ID_STATUT            INT4                 not null,
+   ID_TYPECONTRAT       INT4                 not null,
+   NOM_STATUT           VARCHAR(50)          not null,
+   constraint PK_STATUT primary key (ID_STATUT)
+);
+
+/*==============================================================*/
+/* Table : TYPE_CONTRAT                                         */
+/*==============================================================*/
+create table TYPE_CONTRAT (
+   ID_TYPECONTRAT       INT4                 not null,
+   TYPECONTRAT          VARCHAR(50)          null,
+   constraint PK_TYPE_CONTRAT primary key (ID_TYPECONTRAT)
+);
+
+/*==============================================================*/
+/* Table : TYPE_PUBLICATION                                     */
+/*==============================================================*/
+create table TYPE_PUBLICATION (
+   ID_TYPEPUBLI         INT4                 not null,
+   TYPE_PUBLICATION     VARCHAR(50)          null,
+   RANG_PUBLICATION     NUMERIC              null,
+   MOYEN_D_EDITION      VARCHAR(256)         null,
+   constraint PK_TYPE_PUBLICATION primary key (ID_TYPEPUBLI)
+);
+
+/*==============================================================*/
+/* Table : UTILISE                                              */
+/*==============================================================*/
+create table UTILISE (
+   CODE_USMB            CHAR(10)             not null,
+   IDPROJET             NUMERIC(8)           not null,
+   constraint PK_UTILISE primary key (CODE_USMB, IDPROJET)
+);
+
+alter table AFFECTATION
+   add constraint FK_AFFECTAT_AFFECTATI_PERSONNE foreign key (ID_HAL)
+      references PERSONNE (ID_HAL)
+      on delete restrict on update restrict;
+
+alter table AFFECTATION
+   add constraint FK_AFFECTAT_AFFECTATI_SALLE foreign key (ID_SALLE)
+      references SALLE (ID_SALLE)
+      on delete restrict on update restrict;
+
+alter table AUTEUR_DE
+   add constraint FK_AUTEUR_D_AUTEUR_DE_PUBLICAT foreign key (IDPUBLICATION)
+      references PUBLICATION (IDPUBLICATION)
+      on delete restrict on update restrict;
+
+alter table AUTEUR_DE
+   add constraint FK_AUTEUR_D_AUTEUR_DE_PERSONNE foreign key (ID_HAL)
+      references PERSONNE (ID_HAL)
+      on delete restrict on update restrict;
+
+alter table CONTRAT
+   add constraint FK_CONTRAT_A_STATUT foreign key (ID_statut)
+      references STATUT (ID_STATUT)
+      on delete restrict on update restrict;
+
+alter table CONTRAT
+   add constraint FK_CONTRAT_COMPREND_TYPE_CON foreign key (id_typecontrat)
+      references TYPE_CONTRAT (ID_TYPECONTRAT)
+      on delete restrict on update restrict;
+
+alter table CONTRAT
+   add constraint FK_CONTRAT_SIGNE_PERSONNE foreign key (ID_HAL)
+      references PERSONNE (ID_HAL)
+      on delete restrict on update restrict;
+
+alter table EQUIPEMENT
+   add constraint FK_EQUIPEME_EST_DANS_SALLE foreign key (ID_SALLE)
+      references SALLE (ID_salle)
+      on delete restrict on update restrict;
+
+alter table EST_LIE
+   add constraint FK_EST_LIE_EST_LIE_PROCEDUR foreign key (ID_PROCEDURE)
+      references PROCEDURE (ID_PROCEDURE)
+      on delete restrict on update restrict;
+
+alter table EST_LIE
+   add constraint FK_EST_LIE_EST_LIE2_STATUT foreign key (ID_STATUT)
+      references STATUT (ID_STATUT)
+      on delete restrict on update restrict;
+
+alter table ETAPE
+   add constraint FK_ETAPE_INCLUT_PROCEDUR foreign key (ID_PROCEDURE)
+      references PROCEDURE (ID_PROCEDURE)
+      on delete restrict on update restrict;
+
+alter table ETAPE
+   add constraint FK_ETAPE_REFERENCE_CONTRAT foreign key (NUM_CONTRAT)
+      references CONTRAT (NUM_CONTRAT)
+      on delete restrict on update restrict;
+
+alter table PUBLICATION
+   add constraint FK_PUBLICAT_POSSEDE_TYPE_PUB foreign key (ID_TYPEPubli)
+      references TYPE_PUBLICATION (ID_TYPEPUBLI)
+      on delete restrict on update restrict;
+
+alter table PUBLICATION
+   add constraint FK_PUBLICAT_PUBLIE_PROJET foreign key (IDPROJET)
+      references PROJET (IDPROJET)
+      on delete restrict on update restrict;
+
+alter table ROLE_PERSONNE
+   add constraint FK_ROLE_PER_ROLE_PERS_PERSONNE foreign key (ID_HAL)
+      references PERSONNE (ID_HAL)
+      on delete restrict on update restrict;
+
+alter table ROLE_PERSONNE
+   add constraint FK_ROLE_PER_ROLE_PERS_PROJET foreign key (IDPROJET)
+      references PROJET (IDPROJET)
+      on delete restrict on update restrict;
+
+alter table STATUT
+   add constraint FK_STATUT_DEFINI_TYPE_CON foreign key (id_typecontrat)
+      references TYPE_CONTRAT (ID_TYPECONTRAT)
+      on delete restrict on update restrict;
+
+alter table UTILISE
+   add constraint FK_UTILISE_UTILISE_PROJET foreign key (IDPROJET)
+      references PROJET (IDPROJET)
+      on delete restrict on update restrict;
+
+alter table UTILISE
+   add constraint FK_UTILISE_UTILISE2_EQUIPEME foreign key (CODE_USMB)
+      references EQUIPEMENT (CODE_USMB)
+      on delete restrict on update restrict;

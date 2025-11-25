@@ -1,0 +1,16 @@
+﻿NumEquipement;NomEquipement;CodeUSMB;NumTypeEquipement;NumSalle
+1;Ordinateur de bureau HP EliteDesk;1HP23X0741;1;9
+2;Ordinateur de bureau Dell OptiPlex;1DL89W0312;1;10
+3;Ordinateur de bureau Lenovo ThinkCentre;1LV56Z0928;1;31
+4;Station de travail Dell Precision;2DL77P0634;2;30
+5;Station de travail HP ZBook;2HP98T0217;2;25
+6;Station de travail Lenovo ThinkStation;2LV45S0103;2;12
+7;Serveur de calcul HPE ProLiant;3HP32M0889;3;34
+8;Serveur de calcul Dell PowerEdge;3DL21O0567;3;36
+9;Serveur de calcul Lenovo ThinkSystem;3LV99R0451;3;14
+10;Serveur de calcul NVIDIA DGX;3NV67C0223;3;5
+11;Drone DJI Phantom 4;4DJ78N0810;4;6
+12;Drone Parrot Anafi;4PA56U0392;4;32
+13;Drone Autel Robotics EVO II;4AU90T0154;4;27
+14;Drone Skydio X2;4SK66S0725;4;31
+15;Drone Yuneec Typhoon H;4YU44A0602;4;37
