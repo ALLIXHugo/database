@@ -1,0 +1,113 @@
+-- ================================================================
+-- VUE 1 : CONTRIBUTIONS DES PERSONNES AUX PUBLICATIONS
+-- Objectif : Analyser les contributions scientifiques et leur qualité
+-- ================================================================
+
+DROP VIEW IF EXISTS vue_contributions_publications CASCADE;
+
+CREATE VIEW vue_contributions_publications AS
+SELECT 
+    p.Nom || ' ' || p.Prenom AS NomComplet, p.InterneOuExterne, p.Ville AS VilleResidence, sc.LibelleStatutContrat AS StatutContrat, tc.LibelleTypeContrat AS TypeContrat,
+    c.TypeContribution, pub.TitrePublication, tp.LibellyTypePublication AS TypePublication, e.NomEdition AS NomEdition, e.NombreEtoile AS QualiteEdition, pr.NomProjet,
+    pr.BudgetInitial AS BudgetProjet, pr.DateDebutProjet, gf.NomGuichetFinancement AS GuichetFinancement, i.Role AS RoleDansProjet,
+    CASE 
+        WHEN e.NombreEtoile >= 4 THEN 'Très haute qualité'
+        WHEN e.NombreEtoile >= 3 THEN 'Haute qualité'
+        WHEN e.NombreEtoile >= 2 THEN 'Qualité moyenne'
+        ELSE 'Qualité standard'
+    END AS CategorieQualite,
+    CASE 
+        WHEN sc.LibelleStatutContrat IN ('Enseignant-chercheur', 'Post-doctorant') 
+             AND tp.LibellyTypePublication = 'Journal scientifique' 
+             AND e.NombreEtoile >= 3 THEN 'Très productive'
+        WHEN sc.LibelleStatutContrat IN ('Enseignant-chercheur', 'Post-doctorant', 'Etudiant doctorant') 
+             AND e.NombreEtoile >= 2 THEN 'Productive'
+        ELSE 'Standard'
+    END AS CategorieProductivite
+FROM Personne p
+LEFT JOIN ContratRH crh ON p.NumPersonne = crh.NumPersonne
+LEFT JOIN StatutContrat sc ON crh.NumStatutContrat = sc.NumStatutContrat
+LEFT JOIN TypeContrat tc ON crh.NumTypeContrat = tc.NumTypeContrat
+JOIN Contribuer c ON p.NumPersonne = c.NumPersonne
+JOIN Publication pub ON c.NumPublication = pub.NumPublication
+JOIN Edition e ON pub.NumEdition = e.NumEdition
+JOIN TypePublication tp ON e.NumTypePublication = tp.NumTypePublication
+LEFT JOIN Projet pr ON pub.NumProjet = pr.NumProjet
+LEFT JOIN GuichetFinancement gf ON pr.NumGuichetFinancement = gf.NumGuichetFinancement
+LEFT JOIN Impliquer i ON p.NumPersonne = i.NumPersonne AND pr.NumProjet = i.NumProjet;
+
+
+-- ================================================================
+-- VUE 2 : GESTION DES RESSOURCES ET AFFECTATIONS
+-- Objectif : Analyser l'utilisation des espaces et équipements par équipe
+-- ================================================================
+
+DROP VIEW IF EXISTS vue_gestion_ressources CASCADE;
+
+CREATE VIEW vue_gestion_ressources AS
+SELECT 
+    p.Nom || ' ' || p.Prenom AS NomComplet, p.InterneOuExterne, p.Ville AS VilleResidence, sc.LibelleStatutContrat AS StatutContrat, tc.LibelleTypeContrat AS TypeContrat,
+    crh.DateDebut AS DateDebutContrat, crh.DateFin AS DateFinContrat, s.IdSalle AS IdentifiantSalle, s.Etage, s.CapaciteSalle, ts.LibelleTypeSalle AS TypeSalle,
+    af.DateDebut AS DateDebutAffectation, af.DateFin AS DateFinAffectation, eq.NomEquipement, eq.CodeUSMB AS CodeEquipement, te.LibelleTypeEquipement AS TypeEquipement,
+    ex.TauxExploitation, ex.Frequence AS FrequenceUtilisation, pr.NomProjet, pr.DateDebutProjet, pr.BudgetInitial, gf.NomGuichetFinancement AS GuichetFinancement, i.Role AS RoleDansProjet,
+    CASE 
+        WHEN af.DateFin IS NULL OR af.DateFin > CURRENT_DATE THEN 'Affectation active'
+        ELSE 'Affectation terminée'
+    END AS StatutAffectation,
+    
+    CASE 
+        WHEN crh.DateFin IS NULL OR crh.DateFin > CURRENT_DATE THEN 'Contrat actif'
+        ELSE 'Contrat terminé'
+    END AS EtatContrat,
+    CASE 
+        WHEN ex.TauxExploitation >= 80 THEN 'Charge élevée'
+        WHEN ex.TauxExploitation >= 50 THEN 'Charge modérée'
+        WHEN ex.TauxExploitation >= 20 THEN 'Charge faible'
+        ELSE 'Charge très faible'
+    END AS NiveauCharge,
+    CASE 
+        WHEN te.LibelleTypeEquipement IN ('Serveur de calculs', 'Station de travail') THEN 'Équipement haute valeur'
+        WHEN te.LibelleTypeEquipement = 'Drone' THEN 'Équipement spécialisé'
+        ELSE 'Équipement standard'
+    END AS CategorieEquipement
+FROM Personne p
+LEFT JOIN ContratRH crh ON p.NumPersonne = crh.NumPersonne
+LEFT JOIN StatutContrat sc ON crh.NumStatutContrat = sc.NumStatutContrat
+LEFT JOIN TypeContrat tc ON crh.NumTypeContrat = tc.NumTypeContrat
+LEFT JOIN Affecter af ON p.NumPersonne = af.NumPersonne
+LEFT JOIN Salle s ON af.NumSalle = s.NumSalle
+LEFT JOIN TypeSalle ts ON s.NumTypeSalle = ts.NumTypeSalle
+LEFT JOIN Impliquer i ON p.NumPersonne = i.NumPersonne
+LEFT JOIN Projet pr ON i.NumProjet = pr.NumProjet
+LEFT JOIN GuichetFinancement gf ON pr.NumGuichetFinancement = gf.NumGuichetFinancement
+LEFT JOIN Exploiter ex ON pr.NumProjet = ex.NumProjet
+LEFT JOIN Equipement eq ON ex.NumEquipement = eq.NumEquipement
+LEFT JOIN TypeEquipement te ON eq.NumTypeEquipement = te.NumTypeEquipement;
+
+
+-- ================================================================
+-- REQUÊTES DE TEST POUR VÉRIFIER LES VUES
+-- ================================================================
+
+-- Test de la vue des contributions
+-- SELECT * FROM vue_contributions_publications LIMIT 10;
+
+-- Test de la vue de gestion des ressources
+-- SELECT * FROM vue_gestion_ressources LIMIT 10;
+
+-- Exemples de requêtes d'analyse pour PowerBI :
+
+-- 1. Top des contributeurs par qualité de publication
+-- SELECT NomComplet, StatutContrat, COUNT(*) as NbPublications, 
+--        AVG(QualiteEdition) as QualiteMoyenne
+-- FROM vue_contributions_publications 
+-- GROUP BY NomComplet, StatutContrat 
+-- ORDER BY QualiteMoyenne DESC, NbPublications DESC;
+
+-- 2. Utilisation des équipements par type
+-- SELECT TypeEquipement, COUNT(DISTINCT NomComplet) as NbUtilisateurs,
+--        AVG(TauxExploitation) as TauxMoyen
+-- FROM vue_gestion_ressources 
+-- WHERE TauxExploitation IS NOT NULL
+-- GROUP BY TypeEquipement
+-- ORDER BY TauxMoyen DESC;
